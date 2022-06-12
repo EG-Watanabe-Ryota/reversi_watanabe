@@ -32,34 +32,48 @@ function main()
         {
 
             //whileで囲む
-            echo "黒色のターンです\n";
-            echo "どこに石を置くか入力してください\n";
-            echo "横:";
-            $x=(int)fgets(STDIN);
-            echo "縦:";
-            $y=(int)fgets(STDIN);
-            echo "\n";
-            echo "($x,$y)に石を置きます\n";
+            while(1){
+                echo "黒色のターンです\n";
+                echo "どこに石を置くか入力してください\n";
+                echo "横:";
+                $x=(int)fgets(STDIN);
+                echo "縦:";
+                $y=(int)fgets(STDIN);
+                echo "\n";
+                
 
-            //指定した座標に石を置けるか判定
-            if(check_set($x,$y,$turn_num))
-            {
-                break;
+                //指定した座標に石を置けるか判定 置けなかったら再入力
+                if(check_set($x,$y,$turn_num))
+                {
+                    break;
+                }
+                echo "再入力してください\n";
+                //ここまで
             }
-            //ここまで
+            echo "($x,$y)に石を置きます\n";
 
             //終了前にplayerを相手に変更する
             $turn_num++;
         }
         else{
-            echo "白色のターンです\n";
-            echo "どこに石を置くか入力してください\n";
-            echo "横:";
-            $x=(int)fgets(STDIN);
-            echo "縦:";
-            $y=(int)fgets(STDIN);
-            echo "\n";
+            while(1){
+                echo "白色のターンです\n";
+                echo "どこに石を置くか入力してください\n";
+                echo "横:";
+                $x=(int)fgets(STDIN);
+                echo "縦:";
+                $y=(int)fgets(STDIN);
+                echo "\n";
+                //指定した座標に石を置けるか判定 置けなかったら再入力
+                if(check_set($x,$y,$turn_num))
+                {
+                    break;
+                }
+                echo "再入力してください\n";
+                //ここまで
+            }
             echo "($x,$y)に石を置きます\n";
+
 
             //終了前にplayerを相手に変更する
             $turn_num++;
@@ -123,8 +137,9 @@ function check_set($x,$y,$turn_num)
     else{
         $player='○';
     }
+    $player_array=['○','●'];
     /*両プレイヤーが石を置いていないことをチェックする*/
-    if ($banmen[$y-1][$x-1] === ' ')
+    if ($banmen[$yy][$xx] === ' ')
     {
 
         /*置くマスに上下左右斜めに隣接する相手の色の石が存在すること */
@@ -133,43 +148,76 @@ function check_set($x,$y,$turn_num)
 
         /*(0,0)のとき右、右下、下方向見る */
         case ($zahyo[0] === 0) && ($zahyo[1] === 0):
+            
             if($banmen[$yy][$xx+1] === $player){
                 return true;
             }
             elseif ($banmen[$yy+1][$xx] === $player){
-                return false;
+                return true;
             }
             elseif ($banmen[$yy+1][$xx+1] === $player){
-                return false;
+                return true;
             }
+            return true;
 
         /*(x_n,0)のとき左、左下、下、右下、右方向見る */
         case ($zahyo[0] !== 0 || $zahyo[0] !== 8 ) && ($zahyo[1] === 0):
             if($banmen[$yy][$xx-1] === $player){
-                return false;
+                return true;
             }
             elseif ($banmen[$yy+1][$xx] === $player){
-                return false;
+                return true;
             }
             elseif ($banmen[$yy+1][$xx+1] === $player){
-                return false;
+                return true;
             }
+            return false;
 
         /*(x_max,0)のとき左、左下、下方向見る */
         case ($zahyo[0] === 8) && ($zahyo[1] === 0):
             if($banmen[$yy][$xx-1] === $player){
-                return false;
+                return true;
             }
             elseif ($banmen[$yy-1][$xx-1] === $player){
-                return false;
+                return true;
             }
             elseif ($banmen[$yy+1][$xx] === $player){
-                return false;
+                return true;
             }
+            return true;
 
         /*(0,y_n)のとき上、右上、右、右下、下方向見る */
+        case ($zahyo[0] === 0) && ($zahyo[1] !== 0 || $zahyo[1] !== 8 ):
+            if($banmen[$yy+1][$xx] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy-1][$xx+1] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy][$xx+1] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy+1][$xx] === $player){
+                return true;
+            }
+            return true;
 
         /*(x_max,y_n)のとき上、左上、左、左下、下方向見る */
+        case ($zahyo[0] === 8) && ($zahyo[1] !== 0 || $zahyo[1] !== 8 ):
+            if($banmen[$yy-1][$xx] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy-1][$xx-1] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy][$xx-1] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy+1][$xx-1] === $player){
+                return true;
+            }
+            return true;
+
 
         /*(0,y_max)のとき上、右上、右方向見る */
 
@@ -178,11 +226,48 @@ function check_set($x,$y,$turn_num)
         /*(x_max,y_max)のとき左、左上、上方向見る */
 
         /* 全方位判定*/
+        case (0 < $zahyo[0] && $zahyo[0]< 8 ) && (0 < $zahyo[1] && $zahyo[1]< 8 ) :
+            //全方位みて、相手の石があれば置ける　無ければ置けない
+            //上
+            if($banmen[$yy-1][$xx] === $player_array[($turn_num+1) % 2]){
+                return true;
+            }
+            //下
+            elseif ($banmen[$yy+1][$xx] === $player){
+                return true;
+            }
+            //左
+            elseif ($banmen[$yy][$xx-1] === $player){
+                return true;
+            }
+            //右
+            elseif ($banmen[$yy][$xx+1] === $player){
+                return true;
+            }
+            //右上
+            elseif ($banmen[$yy-1][$xx+1] === $player){
+                return true;
+            }
+            //右下
+            elseif ($banmen[$yy+1][$xx+1] === $player){
+                return true;
+            }
+            //左上
+            elseif ($banmen[$yy-1][$xx-1] === $player){
+                return true;
+            }
+            //左下
+            elseif ($banmen[$yy+1][$xx-1] === $player){
+                return true;
+            }
+            // echo '想定されてない石の置き方\n';
+            return false;
         }
-        return false;
+        
     }
     else
     {
+        echo "すでに石が置いてあるので、指定した座標には置けません\n";
         return true;
     }
 }
