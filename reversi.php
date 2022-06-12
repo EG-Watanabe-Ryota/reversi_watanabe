@@ -30,6 +30,8 @@ function main()
         show();
         if(($turn_num % 2) === 1)
         {
+
+            //whileで囲む
             echo "黒色のターンです\n";
             echo "どこに石を置くか入力してください\n";
             echo "横:";
@@ -40,13 +42,13 @@ function main()
             echo "($x,$y)に石を置きます\n";
 
             //指定した座標に石を置けるか判定
-            if(check_set($x,$y))
+            if(check_set($x,$y,$turn_num))
             {
                 break;
             }
+            //ここまで
 
-            
-            $player=false; //終了前にplayerを相手に変更する
+            //終了前にplayerを相手に変更する
             $turn_num++;
         }
         else{
@@ -60,7 +62,7 @@ function main()
             echo "($x,$y)に石を置きます\n";
 
             //終了前にplayerを相手に変更する
-            $player=true;
+            $turn_num++;
         }
     }
 }
@@ -109,23 +111,61 @@ function reset_banmen()
 }
 
 /*指定した座標に石を置けるか判定する */
-function check_set($x,$y)
+function check_set($x,$y,$turn_num)
 {
     global $banmen;
     $zahyo=[$x,$y];
+    $xx=$x-1;
+    $yy=$y-1;
+    if(($turn_num % 2) === 1){
+        $player='●';
+    }
+    else{
+        $player='○';
+    }
     /*両プレイヤーが石を置いていないことをチェックする*/
     if ($banmen[$y-1][$x-1] === ' ')
     {
+
         /*置くマスに上下左右斜めに隣接する相手の色の石が存在すること */
         switch($zahyo)
         {
 
         /*(0,0)のとき右、右下、下方向見る */
-        
+        case ($zahyo[0] === 0) && ($zahyo[1] === 0):
+            if($banmen[$yy][$xx+1] === $player){
+                return true;
+            }
+            elseif ($banmen[$yy+1][$xx] === $player){
+                return false;
+            }
+            elseif ($banmen[$yy+1][$xx+1] === $player){
+                return false;
+            }
 
         /*(x_n,0)のとき左、左下、下、右下、右方向見る */
+        case ($zahyo[0] !== 0 || $zahyo[0] !== 8 ) && ($zahyo[1] === 0):
+            if($banmen[$yy][$xx-1] === $player){
+                return false;
+            }
+            elseif ($banmen[$yy+1][$xx] === $player){
+                return false;
+            }
+            elseif ($banmen[$yy+1][$xx+1] === $player){
+                return false;
+            }
 
         /*(x_max,0)のとき左、左下、下方向見る */
+        case ($zahyo[0] === 8) && ($zahyo[1] === 0):
+            if($banmen[$yy][$xx-1] === $player){
+                return false;
+            }
+            elseif ($banmen[$yy-1][$xx-1] === $player){
+                return false;
+            }
+            elseif ($banmen[$yy+1][$xx] === $player){
+                return false;
+            }
 
         /*(0,y_n)のとき上、右上、右、右下、下方向見る */
 
