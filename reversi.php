@@ -230,37 +230,52 @@ function check_set($x,$y,$turn_num)
             //全方位みて、相手の石があれば置ける　無ければ置けない
             //上
             if($banmen[$yy-1][$xx] === $player_array[($turn_num+1) % 2]){
-                return true;
+                
             }
             //下
-            elseif ($banmen[$yy+1][$xx] === $player){
+            elseif ($banmen[$yy+1][$xx] === $player_array[($turn_num+1) % 2]){
                 return true;
             }
             //左
-            elseif ($banmen[$yy][$xx-1] === $player){
+            elseif ($banmen[$yy][$xx-1] === $player_array[($turn_num+1) % 2]){
                 return true;
             }
             //右
-            elseif ($banmen[$yy][$xx+1] === $player){
-                return true;
+            elseif ($banmen[$yy][$xx+1] === $player_array[($turn_num+1) % 2]){
+                for ($i=$xx+1; $i<8; $i++){
+                    if ($i===7){
+                        continue;
+                    }
+                    if ($banmen[$yy][$i] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                }
             }
             //右上
-            elseif ($banmen[$yy-1][$xx+1] === $player){
+            elseif ($banmen[$yy-1][$xx+1] === $player_array[($turn_num+1) % 2]){
                 return true;
             }
             //右下
-            elseif ($banmen[$yy+1][$xx+1] === $player){
-                return true;
+            elseif ($banmen[$yy+1][$xx+1] === $player_array[($turn_num+1) % 2]){
+                for ($i=1; $i<8; $i++){
+                        if ($xx+$i===7 && $yy+$i==7){
+                            continue;
+                        }
+                        if ($banmen[$yy+$i][$xx+$i] === $player_array[($turn_num) % 2]){
+                            return true;
+                        }
+                    }
             }
             //左上
-            elseif ($banmen[$yy-1][$xx-1] === $player){
+            elseif ($banmen[$yy-1][$xx-1] === $player_array[($turn_num+1) % 2]){
                 return true;
             }
             //左下
-            elseif ($banmen[$yy+1][$xx-1] === $player){
+            elseif ($banmen[$yy+1][$xx-1] === $player_array[($turn_num+1) % 2]){
                 return true;
             }
             // echo '想定されてない石の置き方\n';
+            //条件に合う置き方が見つからなかったらfalseを返す
             return false;
         }
         
