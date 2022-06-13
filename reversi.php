@@ -1,4 +1,7 @@
 <?php
+
+use function DeepCopy\deep_copy;
+
 /*変数宣言*/
 $banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
@@ -10,7 +13,7 @@ $banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
         ];
 
-// $turn_num=0;
+$turn_num=1;
 $player=true; //Trueが黒、Falseが白
 /*ーーーーーー ここまで ーーーーーー*/
 
@@ -19,8 +22,7 @@ main();
 /*メイン関数(ここでメインの処理を行う)*/
 function main()
 {
-    global $banmen,$player;
-    $turn_num=1;
+    global $banmen,$player,$turn_num;
     while(1)
     {
         /*ゲーム終了条件に合致してるか判定処理書く */
@@ -51,6 +53,7 @@ function main()
                 //ここまで
             }
             echo "($x,$y)に石を置きます\n";
+            $banmen[$y-1][$x-1] = '●';
 
             //終了前にplayerを相手に変更する
             $turn_num++;
@@ -73,6 +76,7 @@ function main()
                 //ここまで
             }
             echo "($x,$y)に石を置きます\n";
+            $banmen[$y-1][$x-1] = '○';
 
 
             //終了前にplayerを相手に変更する
@@ -230,15 +234,41 @@ function check_set($x,$y,$turn_num)
             //全方位みて、相手の石があれば置ける　無ければ置けない
             //上
             if($banmen[$yy-1][$xx] === $player_array[($turn_num+1) % 2]){
+                $h=$yy-1;
+                while($h>-1){
+                    if ($h===1){
+                        continue;
+                    }
+                    if ($banmen[$h][$xx] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                    $h--;
+                }
                 
             }
             //下
             elseif ($banmen[$yy+1][$xx] === $player_array[($turn_num+1) % 2]){
-                return true;
+                for ($i=$yy+1; $i<8; $i++){
+                    if ($i===7){
+                        continue;
+                    }
+                    if ($banmen[$i][$xx] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                }
             }
             //左
             elseif ($banmen[$yy][$xx-1] === $player_array[($turn_num+1) % 2]){
-                return true;
+                $w=$xx-1;
+                while($w>-1){
+                    if ($w===1){
+                        continue;
+                    }
+                    if ($banmen[$yy][$w] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                    $w--;
+                }
             }
             //右
             elseif ($banmen[$yy][$xx+1] === $player_array[($turn_num+1) % 2]){
@@ -247,36 +277,81 @@ function check_set($x,$y,$turn_num)
                         continue;
                     }
                     if ($banmen[$yy][$i] === $player_array[($turn_num) % 2]){
+                        
+                        for ($j=$xx+1; $j<$i; $j++){
+                            $banmen[$yy][$j] = $player_array[($turn_num) % 2];
+                        }
                         return true;
                     }
                 }
             }
-            //右上
+            //右上 muzukasi
             elseif ($banmen[$yy-1][$xx+1] === $player_array[($turn_num+1) % 2]){
-                return true;
+                $w= $xx+1;
+                $h= $yy-1;
+                while($w<8 && $h>-1){
+                    if ($w===6 && $h==1){
+                        //continue
+                        continue;
+                    }
+                    if ($banmen[$h][$w] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                    $w++;
+                    $h--;
+                }
             }
             //右下
             elseif ($banmen[$yy+1][$xx+1] === $player_array[($turn_num+1) % 2]){
-                for ($i=1; $i<8; $i++){
-                        if ($xx+$i===7 && $yy+$i==7){
-                            //continue
-                            continue;
-                        }
-                        if ($banmen[$yy+$i][$xx+$i] === $player_array[($turn_num) % 2]){
-                            return true;
-                        }
+                $w= $xx+1;
+                $h= $yy+1;
+                while($w<8 && $h<8){
+                    if ($w===6 && $h==6){
+                        //continue
+                        continue;
                     }
+                    if ($banmen[$h][$w] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                    $w++;
+                    $h++;
+                }
             }
-            //左上
+            //左上 
             elseif ($banmen[$yy-1][$xx-1] === $player_array[($turn_num+1) % 2]){
-                return true;
+                $w= $xx-1;
+                $h= $yy-1;
+                while($w>-1 && $h>-1){
+                    if ($w===6 && $h==6){
+                        //continue
+                        continue;
+                    }
+                    if ($banmen[$h][$w] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                    $w--;
+                    $h--;
+                }
             }
-            //左下
+            //左下 muzukasi
             elseif ($banmen[$yy+1][$xx-1] === $player_array[($turn_num+1) % 2]){
-                return true;
+                $w= $xx-1;
+                $h= $yy+1;
+                while($w>-1 && $h<8){
+                    if ($w===1 && $h==6){
+                        //continue
+                        continue;
+                    }
+                    if ($banmen[$h][$w] === $player_array[($turn_num) % 2]){
+                        return true;
+                    }
+                    $w--;
+                    $h++;
+                }
             }
             // echo '想定されてない石の置き方\n';
             //条件に合う置き方が見つからなかったらfalseを返す
+            echo "そこには置けません\n";
             return false;
         }
         
@@ -284,6 +359,7 @@ function check_set($x,$y,$turn_num)
     else
     {
         echo "すでに石が置いてあるので、指定した座標には置けません\n";
-        return true;
+        return false;
     }
 }
+
