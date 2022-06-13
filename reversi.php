@@ -259,6 +259,7 @@ function check_set($x,$y,$turn_num)
             elseif ($banmen[$yy+1][$xx+1] === $player_array[($turn_num+1) % 2]){
                 for ($i=1; $i<8; $i++){
                         if ($xx+$i===7 && $yy+$i==7){
+                            //continue
                             continue;
                         }
                         if ($banmen[$yy+$i][$xx+$i] === $player_array[($turn_num) % 2]){
