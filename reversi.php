@@ -36,6 +36,16 @@ function main()
             //whileで囲む
             while(1){
                 echo "黒色のターンです\n";
+                if(!(is_result())){
+                    echo "石を置ける場所がありません。ゲームを終了します\n";
+                    winner_judge();  
+                    exit();
+                }
+                if(!(is_result2())){
+                    echo "どちらも石を置ける場所がありません。ゲームを終了します\n"; 
+                    winner_judge();  
+                    exit();  
+                }
                 echo "どこに石を置くか入力してください\n";
                 echo "横:";
                 $x=(int)fgets(STDIN);
@@ -62,6 +72,16 @@ function main()
         else{
             while(1){
                 echo "白色のターンです\n";
+                if(!(is_result())){
+                    echo "石を置ける場所がありません。ゲームを終了します\n";
+                    winner_judge(); 
+                    exit();
+                }
+                if(!(is_result2())){
+                    echo "どちらも石を置ける場所がありません。ゲームを終了します\n"; 
+                    winner_judge();  
+                    exit();
+                }
                 echo "どこに石を置くか入力してください\n";
                 echo "横:";
                 $x=(int)fgets(STDIN);
@@ -120,22 +140,46 @@ function show()
         echo "\n";
     }
 }
+//終了条件１の判定
+function is_result(){
+    global $banmen,$turn_num;
+    $flag=false;
+    for($i=0; $i<8; $i++){
+        for($j=0; $j<8; $j++){
+            if($banmen[$i][$j]===' '){
+                $flag=true;
+            }
+        }
+    }
+    return $flag;
+}
 
-/*盤面に置いてある石を数える関数 */
-function result()
-{
-
+/*終了条件を判定する関数 */
+//終了条件２の判定
+function is_result2(){
+    global $banmen,$turn_num;
+    $flag=false;
+    for($i=0; $i<8; $i++){
+        for($j=0; $j<8; $j++){
+            if($banmen[$i][$j]===' '){
+                if(check_set($i,$j,$turn_num)){
+                    if(check_set($i,$j,$turn_num+1)){
+                        $flag=true;
+                    }
+                }
+            }
+        }
+    }
+    return $flag;
 }
 
 /*盤面の状態をリセットする */
-function reset_banmen()
-{
+function reset_banmen(){
     global $banmen;
 }
 
 /*指定した座標に石を置けるか判定する */
-function check_set($x,$y,$turn_num)
-{
+function check_set($x,$y,$turn_num){
     global $banmen;
     $zahyo=[$x,$y];
     $xx=$x-1;
@@ -856,3 +900,30 @@ function DownLeft_reversi($xx,$yy,$player_array){
         $w--;
     }
 }
+
+function winner_judge(){
+    global $banmen;
+    $black_stone=0;
+    $white_stone=0;
+    for($i=0; $i<8; $i++){
+        for($j=0; $j<8; $j++){
+            if($banmen[$i][$j]==='●'){
+                $black_stone++;
+            }
+            if($banmen[$i][$j]==='○'){
+                $white_stone++;
+            }
+            
+        }
+    }
+    if($black_stone>$white_stone){
+        return "黒色のプレイヤーの勝利です\n";
+    }
+    elseif($black_stone<$white_stone){
+        return "白色のプレイヤーの勝利です\n";
+    }
+    elseif($black_stone===$white_stone){
+        return "引き分けです\n";
+    }
+}
+
