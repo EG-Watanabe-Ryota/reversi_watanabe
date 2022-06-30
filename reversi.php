@@ -3,10 +3,10 @@
 use function DeepCopy\deep_copy;
 
 /*変数宣言*/
-$banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ','○','●',' ',' ',' '],
+$banmen=[[' ',' ',' ',' ','●','○','○',' '],
+        [' ',' ',' ',' ',' ',' ','○','○'],
+        [' ',' ',' ',' ',' ','○',' ','○'],
+        [' ',' ',' ','○','●',' ',' ','●'],
         [' ',' ',' ','●','○',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
@@ -15,6 +15,7 @@ $banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
 
 $turn_num=1;
 $player=true; //Trueが黒、Falseが白
+$pass_count=0;
 /*ーーーーーー ここまで ーーーーーー*/
 
 main();
@@ -30,83 +31,51 @@ function main()
         /*ーーーーーー ここまで ーーーーーー*/
         echo "$turn_num"."ターン目の盤面を表示します\n";
         show();
-        if(($turn_num % 2) === 1)
-        {
+        player_place();
+        // if(($turn_num % 2) === 1)
+        // {
 
-            //whileで囲む
-            while(1){
-                echo "黒色のターンです\n";
-                if(!(is_result())){
-                    echo "石を置ける場所がありません。ゲームを終了します\n";
-                    winner_judge();  
-                    exit();
-                }
-                if(!(is_result2())){
-                    echo "どちらも石を置ける場所がありません。ゲームを終了します\n"; 
-                    winner_judge();  
-                    exit();  
-                }
-                echo "どこに石を置くか入力してください\n";
-                echo "横:";
-                $x=(int)fgets(STDIN);
-                echo "縦:";
-                $y=(int)fgets(STDIN);
-                echo "\n";
-                
-
-                //指定した座標に石を置けるか判定 置けなかったら再入力
-                if(check_set($x,$y,$turn_num))
-                {
-                    break;
-                }
-                echo "再入力してください\n";
-                //ここまで
-            }
-            echo "($x,$y)に石を置きます\n";
-            reversi($x,$y,$turn_num);
-            $banmen[$y-1][$x-1] = '●';
-
-            //終了前にplayerを相手に変更する
-            $turn_num++;
-        }
-        else{
-            while(1){
-                echo "白色のターンです\n";
-                if(!(is_result())){
-                    echo "石を置ける場所がありません。ゲームを終了します\n";
-                    winner_judge(); 
-                    exit();
-                }
-                if(!(is_result2())){
-                    echo "どちらも石を置ける場所がありません。ゲームを終了します\n"; 
-                    winner_judge();  
-                    exit();
-                }
-                echo "どこに石を置くか入力してください\n";
-                echo "横:";
-                $x=(int)fgets(STDIN);
-                echo "縦:";
-                $y=(int)fgets(STDIN);
-                echo "\n";
-                //指定した座標に石を置けるか判定 置けなかったら再入力
-                if(check_set($x,$y,$turn_num))
-                {
-                    break;
-                }
-                echo "再入力してください\n";
-                //ここまで
-            }
-            echo "($x,$y)に石を置きます\n";
+        //     //whileで囲む
+        //     echo 'ccc';
+        // }
+        // else{
+        //     while(1){
+        //         echo "白色のターンです\n";
+        //         if(!(is_result())){
+        //             echo "石を置ける場所がありません。ゲームを終了します\n";
+        //             winner_judge(); 
+        //             exit();
+        //         }
+        //         // if(!(both_unable_place())){
+        //         //     echo "どちらも石を置ける場所がありません。ゲームを終了します\n"; 
+        //         //     winner_judge();  
+        //         //     exit();
+        //         // }
+        //         echo "どこに石を置くか入力してください\n";
+        //         echo "横:";
+        //         $x=(int)fgets(STDIN);
+        //         echo "縦:";
+        //         $y=(int)fgets(STDIN);
+        //         echo "\n";
+        //         //指定した座標に石を置けるか判定 置けなかったら再入力
+        //         if(check_set($x,$y,$turn_num))
+        //         {
+        //             break;
+        //         }
+        //         echo "再入力してください\n";
+        //         //ここまで
+        //     }
+        //     echo "($x,$y)に石を置きます\n";
             
-            reversi($x,$y,$turn_num);
+        //     reversi($x,$y,$turn_num);
             
-            $banmen[$y-1][$x-1] = '○';
+        //     $banmen[$y-1][$x-1] = '○';
 
 
-            //終了前にplayerを相手に変更する
-            $turn_num++;
+        //     //終了前にplayerを相手に変更する
+        //     $turn_num++;
             
-        }
+        // }
     }
 }
 
@@ -141,36 +110,43 @@ function show()
     }
 }
 //終了条件１の判定
+//空いている場所がなくなったら、falseを返す
 function is_result(){
     global $banmen,$turn_num;
-    $flag=false;
+    //empty_place_existが変数名の例
     for($i=0; $i<8; $i++){
         for($j=0; $j<8; $j++){
             if($banmen[$i][$j]===' '){
-                $flag=true;
+                //1個でも空いてたらreturnで真偽を返す
+                return true;
             }
         }
     }
-    return $flag;
+    return false;
 }
 
 /*終了条件を判定する関数 */
-//終了条件２の判定
-function is_result2(){
+//プレイヤーがどちらも置けなくなったらゲーム終了の判定
+function both_unable_place(){
     global $banmen,$turn_num;
-    $flag=false;
-    for($i=0; $i<8; $i++){
-        for($j=0; $j<8; $j++){
-            if($banmen[$i][$j]===' '){
-                if(check_set($i,$j,$turn_num)){
-                    if(check_set($i,$j,$turn_num+1)){
-                        $flag=true;
-                    }
-                }
+    for($i=1; $i<=8; $i++){
+        for($j=1; $j<=8; $j++){
+            //あれば続行
+            if($banmen[$i-1][$j-1]===' '&&check_set($i,$j,$turn_num)===true){
+                return true;
             }
         }
     }
-    return $flag;
+    $turn_num=($turn_numn + 1) % 2;
+    for($i=1; $i<=8; $i++){
+        for($j=1; $j<=8; $j++){
+            //あれば続行
+            if($banmen[$i-1][$j-1]===' '&&check_set($i,$j,$turn_num)===true){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 /*盤面の状態をリセットする */
@@ -181,7 +157,7 @@ function reset_banmen(){
 /*指定した座標に石を置けるか判定する */
 function check_set($x,$y,$turn_num){
     global $banmen;
-    $zahyo=[$x,$y];
+    $zahyo=[$x-1,$y-1];
     $xx=$x-1;
     $yy=$y-1;
     if(($turn_num % 2) === 1){
@@ -222,6 +198,7 @@ function check_set($x,$y,$turn_num){
                 return true;
             }
             //下
+            
             if(down_check($xx,$yy,$player_array)){
                 return true;
             }
@@ -238,6 +215,7 @@ function check_set($x,$y,$turn_num){
                 return true;
             }
             //下
+            
             if(down_check($xx,$yy,$player_array)){
                 return true;
             }
@@ -274,6 +252,7 @@ function check_set($x,$y,$turn_num){
                 return true;
             }
             //下
+            
             if(down_check($xx,$yy,$player_array)){
                 return true;
             }
@@ -295,6 +274,7 @@ function check_set($x,$y,$turn_num){
         /*(0,y_max)のとき上、右上、右方向見る */
         case ($zahyo[0] === 0) && ($zahyo[1] === 8) :
             //上
+            
             if(up_check($xx,$yy,$player_array)){
                 return true;
             }
@@ -313,6 +293,7 @@ function check_set($x,$y,$turn_num){
         case (0 < $zahyo[0] && $zahyo[0]< 8 ) && ($zahyo[1] === 8) :
 
             //上
+            
             if(up_check($xx,$yy,$player_array)){
                 return true;
             }
@@ -361,8 +342,7 @@ function check_set($x,$y,$turn_num){
             if(up_check($xx,$yy,$player_array)){
                 return true;
             }
-            //下
-            echo '1';  
+            //下  
             if(down_check($xx,$yy,$player_array)){
                 
                 return true;
@@ -399,7 +379,6 @@ function check_set($x,$y,$turn_num){
                 return true;
             }
             //条件に合う置き方が見つからなかったらfalseを返す
-            echo "そこには置けません\n";
             return false;
         }
         
@@ -413,6 +392,7 @@ function check_set($x,$y,$turn_num){
 
 function up_check($xx,$yy,$player_array){
     global $banmen,$turn_num;
+    //get_of_stone的なメソッドを作る
     if($banmen[$yy-1][$xx] === $player_array[($turn_num+1) % 2]){
         $h=$yy-1;
         echo "$h\n";
@@ -532,7 +512,6 @@ function DownRight_check($xx,$yy,$player_array){
                 
             //     continue;
             // }
-            echo 'a';
             if ($banmen[$h][$w] === $player_array[($turn_num) % 2]){
                 return true;
             }
@@ -927,3 +906,68 @@ function winner_judge(){
     }
 }
 
+function player_place(){
+    global $banmen,$turn_num,$pass_count;
+    if(($turn_num % 2) === 1){
+        $player='黒色';
+        $player_icon='●';
+    } 
+    else{
+        $player='白色';
+        $player_icon='○';
+    }
+    echo $player."のターンです\n";
+    if(!(is_result())){
+        echo "石を置ける場所がありません。ゲームを終了します\n";
+        winner_judge();  
+        exit();
+    }
+    if(both_unable_place()===false){
+        echo "どちらも石を置ける場所がありません。判定に移ります\n"; 
+        $result_winner=winner_judge();
+        echo $result_winner."\n";
+        echo "ゲームを終了します\n";
+        exit();  
+    }
+    while(1){
+        echo "どこに石を置くか入力してください\n";
+        echo "横:";
+        $x=(int)fgets(STDIN);
+        echo "縦:";
+        $y=(int)fgets(STDIN);
+        echo "\n";
+
+        if($x===-1 || $y===-1){
+            echo "パスします\n";
+            $pass_count++;
+            $turn_num++;
+            break;
+        }
+
+        if( $x < 1 || $y < 1 || $x > 8 || $y > 8){
+            printf("＜異常な値が入力されています。＞\n");
+            echo "再入力してください\n";
+            continue;
+          }
+        
+
+        //指定した座標に石を置けるか判定 置けなかったら再入力
+        if(check_set($x,$y,$turn_num))
+        {
+            break;
+        }
+        echo "再入力してください\n";
+        //ここまで
+    }
+    if($x!==-1 || $y!==-1){
+        echo "($x,$y)に石を置きます\n";
+        reversi($x,$y,$turn_num);
+        $banmen[$y-1][$x-1] = $player_icon;
+
+        //終了前にplayerを相手に変更する
+        $turn_num++;
+    }
+
+
+
+}
