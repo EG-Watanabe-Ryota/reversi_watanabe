@@ -7,10 +7,10 @@ $banmen=[[' ',' ',' ',' ','●','○','○',' '],
         [' ',' ',' ',' ',' ',' ','○','○'],
         [' ',' ',' ',' ',' ','○',' ','○'],
         [' ',' ',' ','○','●',' ',' ','●'],
-        [' ',' ',' ','●','○',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
+        ['●',' ',' ','●','○',' ',' ',' '],
+        ['○',' ','○',' ',' ',' ',' ',' '],
+        ['○','○',' ',' ',' ',' ',' ',' '],
+        [' ','○','○','●',' ',' ',' ',' '],
         ];
 
 $turn_num=1;
@@ -192,7 +192,7 @@ function check_set($x,$y,$turn_num){
             return false;
 
         /*(x_n,0)のとき左、左下、下、右下、右方向見る */
-        case (0 < $zahyo[0] && $zahyo[0]< 8 ) && ($zahyo[1] === 0):
+        case (0 < $zahyo[0] && $zahyo[0]< 7 ) && ($zahyo[1] === 0):
             //左
             if(left_check($xx,$yy,$player_array)){
                 return true;
@@ -209,7 +209,7 @@ function check_set($x,$y,$turn_num){
             return false;
 
         /*(x_max,0)のとき左、左下、下方向見る */
-        case ($zahyo[0] === 8) && ($zahyo[1] === 0):
+        case ($zahyo[0] === 7) && ($zahyo[1] === 0):
             //左
             if(left_check($xx,$yy,$player_array)){
                 return true;
@@ -246,7 +246,7 @@ function check_set($x,$y,$turn_num){
             return false;
 
         /*(x_max,y_n)のとき上、左上、左、左下、下方向見る */
-        case ($zahyo[0] === 8) && (0 < $zahyo[1] && $zahyo[1]< 8 ):
+        case ($zahyo[0] === 7) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
             //上
             if(up_check($xx,$yy,$player_array)){
                 return true;
@@ -272,9 +272,9 @@ function check_set($x,$y,$turn_num){
 
 
         /*(0,y_max)のとき上、右上、右方向見る */
-        case ($zahyo[0] === 0) && ($zahyo[1] === 8) :
+        case ($zahyo[0] === 0) && ($zahyo[1] === 7) :
             //上
-            
+            echo $zahyo[0],$zahyo[1];
             if(up_check($xx,$yy,$player_array)){
                 return true;
             }
@@ -290,7 +290,7 @@ function check_set($x,$y,$turn_num){
             }
 
         /*(x_n,y_max)のとき左、左上、上、右上、右方向見る */
-        case (0 < $zahyo[0] && $zahyo[0]< 8 ) && ($zahyo[1] === 8) :
+        case (0 < $zahyo[0] && $zahyo[0]< 7 ) && ($zahyo[1] === 7) :
 
             //上
             
@@ -319,7 +319,7 @@ function check_set($x,$y,$turn_num){
             }
 
         /*(x_max,y_max)のとき左、左上、上方向見る */
-        case ($zahyo[0] === 8) && ($zahyo[1] === 8) :
+        case ($zahyo[0] === 7) && ($zahyo[1] === 7) :
             //上
             if(up_check($xx,$yy,$player_array)){
                 return true;
@@ -336,7 +336,7 @@ function check_set($x,$y,$turn_num){
             }
 
         /* 全方位判定*/
-        case (0 < $zahyo[0] && $zahyo[0]< 8 ) && (0 < $zahyo[1] && $zahyo[1]< 8 ) :
+        case (0 < $zahyo[0] && $zahyo[0]< 7 ) && (0 < $zahyo[1] && $zahyo[1]< 7) :
             //全方位みて、相手の石があれば置ける　無ければ置けない
             //上
             if(up_check($xx,$yy,$player_array)){
@@ -416,12 +416,10 @@ function up_check($xx,$yy,$player_array){
 
 function down_check($xx,$yy,$player_array){
     global $banmen,$turn_num;
-    echo $yy,$xx;
+    // echo $yy,$xx;
     if ($banmen[$yy+1][$xx] === $player_array[($turn_num+1) % 2]){
         $h=$yy+1;
         while($h++){     
-            
-            // echo $h;
             if($h===8){
                 break;
             }
