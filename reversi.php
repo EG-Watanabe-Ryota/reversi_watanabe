@@ -226,7 +226,7 @@ function check_set($x,$y,$turn_num){
             return false;
 
         /*(0,y_n)のとき上、右上、右、右下、下方向見る */
-        case ($zahyo[0] === 0) && (0 < $zahyo[1] && $zahyo[1]< 8 ):
+        case ($zahyo[0] === 0) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
             //上
             if(up_check($xx,$yy,$player_array)){
                 return true;
@@ -416,6 +416,7 @@ function up_check($xx,$yy,$player_array){
 
 function down_check($xx,$yy,$player_array){
     global $banmen,$turn_num;
+    echo $yy,$xx;
     if ($banmen[$yy+1][$xx] === $player_array[($turn_num+1) % 2]){
         $h=$yy+1;
         while($h++){     
@@ -967,7 +968,4 @@ function player_place(){
         //終了前にplayerを相手に変更する
         $turn_num++;
     }
-
-
-
 }
