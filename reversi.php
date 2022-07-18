@@ -3,12 +3,12 @@
 use function DeepCopy\deep_copy;
 
 /*変数宣言*/
-$banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ','○','●',' ',' ',' '],
-        [' ',' ',' ','●','○',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ',' '],
+$banmen=[[' ',' ',' ',' ','○',' ',' ',' '],
+        [' ',' ',' ','●',' ','○',' ',' '],
+        [' ',' ',' ','●','●',' ','○',' '],
+        [' ',' ','●','●','●','○',' ',' '],
+        [' ',' ','●','●','○',' ',' ',' '],
+        [' ',' ','●',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
         ];
@@ -93,7 +93,7 @@ function both_unable_place(){
             }
         }
     }
-    $turn_num=($turn_numn + 1) % 2;
+    $turn_num=($turn_num + 1) % 2;
     for($i=1; $i<=8; $i++){
         for($j=1; $j<=8; $j++){
             //あれば続行
@@ -160,6 +160,10 @@ function check_set($x,$y,$turn_num){
             }
             //右下
             if(DownRight_check($xx,$yy,$player_array)){
+                return true;
+            }
+            //左下
+            if(DownLeft_check($xx,$yy,$player_array)){
                 return true;
             }
             return false;
@@ -348,7 +352,7 @@ function check_set($x,$y,$turn_num){
     else
     {
         
-        echo "すでに石が置いてあるので、指定した座標には置けません\n";
+        // echo "すでに石が置いてあるので、指定した座標には置けません\n";
         return false;
     }
 }
@@ -578,6 +582,10 @@ function reversi($x,$y,$turn_num){
             //右下
             if(DownRight_check($xx,$yy,$player_array)){
                 DownRight_reversi($xx,$yy,$player_array);
+            }
+            //左下
+            if(DownLeft_check($xx,$yy,$player_array)){
+                DownLeft_reversi($xx,$yy,$player_array);
             }
             break;
 
@@ -935,7 +943,7 @@ function player_place(){
         {
             break;
         }
-        echo "再入力してください\n";
+        echo "そこには置けません。再入力してください\n";
         //ここまで
     }
     if($x!==-1 || $y!==-1){
