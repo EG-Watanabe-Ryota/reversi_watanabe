@@ -1,16 +1,24 @@
 <?php
 
-use function DeepCopy\deep_copy;
-
 /*変数宣言*/
-$banmen=[[' ',' ',' ',' ','○',' ',' ',' '],
-        [' ',' ',' ','●',' ','○',' ',' '],
-        [' ',' ',' ','●','●',' ','○',' '],
-        [' ',' ','●','●','●','○',' ',' '],
-        [' ',' ','●','●','○',' ',' ',' '],
-        [' ',' ','●',' ',' ',' ',' ',' '],
+$banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ','○','●',' ',' ',' '],
+        [' ',' ',' ','●','○',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        ];
+        
+$banmen=[['●','●','●','●','○','●','●','●'],
+        ['●','●','●','●','●','○','●','●'],
+        ['●','●','●','●','●','●','○','●'],
+        ['●','●','●','●','●','○','●','●'],
+        ['●','●','●','●','○','●','●','●'],
+        ['●','●','●','●','●',' ','●','●'],
+        ['●','●','●','●','●','●','●','●'],
+        ['●','●','●','●','●','●','●','●'],
         ];
 
 $turn_num=1;
@@ -105,11 +113,6 @@ function both_unable_place(){
     return false;
 }
 
-/*盤面の状態をリセットする */
-function reset_banmen(){
-    global $banmen;
-}
-
 /*指定した座標に石を置けるか判定する */
 function check_set($x,$y,$turn_num){
     global $banmen;
@@ -151,6 +154,10 @@ function check_set($x,$y,$turn_num){
         case (0 < $zahyo[0] && $zahyo[0]< 7 ) && ($zahyo[1] === 0):
             //左
             if(left_check($xx,$yy,$player_array)){
+                return true;
+            }
+            //右
+            if(right_check($xx,$yy,$player_array)){
                 return true;
             }
             //下
@@ -368,10 +375,6 @@ function up_check($xx,$yy,$player_array){
             if($h===-1){
                 break;
             }
-            // $s=(int)fgets(STDIN);
-            // if ($h===1){
-            //     continue;
-            // }
             if ($banmen[$h][$xx] === $player_array[($turn_num) % 2]){
                 return true;
             }
@@ -389,14 +392,7 @@ function down_check($xx,$yy,$player_array){
         while($h++){     
             if($h===8){
                 break;
-            }
-             
-            // $s=(int)fgets(STDIN);
-            // if ($h===1){
-                
-            //     continue;
-            // }
-            
+            }          
             if ($banmen[$h][$xx] === $player_array[($turn_num) % 2]){
                 
                 return true;
@@ -434,9 +430,6 @@ function right_check($xx,$yy,$player_array){
     global $banmen,$turn_num;
     if ($banmen[$yy][$xx+1] === $player_array[($turn_num+1) % 2]){
         for ($i=$xx+1; $i<8; $i++){
-            // if ($i===7){
-            //     continue;
-            // }
             if ($banmen[$yy][$i] === $player_array[($turn_num) % 2]){
                 return true;
             }
@@ -573,6 +566,10 @@ function reversi($x,$y,$turn_num){
             
             if(left_check($xx,$yy,$player_array)){
                 left_reversi($xx,$yy,$player_array);
+            }
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
             }
             //下
             
@@ -803,7 +800,6 @@ function left_reversi($xx,$yy,$player_array){
 function right_reversi($xx,$yy,$player_array){
     global $banmen,$turn_num;
     for ($i=$xx+1; $i<8; $i++){
-                    
         if($banmen[$yy][$i] === $player_array[($turn_num) % 2]){
             break;
         }
@@ -882,14 +878,16 @@ function winner_judge(){
             
         }
     }
+    echo '黒の数:'.$black_stone."\n";
+    echo '白の数:'.$white_stone."\n";
     if($black_stone>$white_stone){
-        return "黒色のプレイヤーの勝利です\n";
+        echo "黒色のプレイヤーの勝利です\n";
     }
     elseif($black_stone<$white_stone){
-        return "白色のプレイヤーの勝利です\n";
+        echo "白色のプレイヤーの勝利です\n";
     }
     elseif($black_stone===$white_stone){
-        return "引き分けです\n";
+        echo "引き分けです\n";
     }
 }
 
@@ -983,5 +981,291 @@ function right_check_and_reversi($xx,$yy,$player_array){
 function left_check_and_reversi($xx,$yy,$player_array){
     if(left_check($xx,$yy,$player_array)){
         left_reversi($xx,$yy,$player_array);
+    }
+}
+
+
+// function ygazero(x){
+//     //下
+//     if(down_check($xx,$yy,$player_array)){
+//         return true;
+//     }
+
+//     if x>=0 and x<7{
+//         migi_migisita();
+//     }
+
+//     if 0<x and x<=7{
+//         hidari_hidarisita()
+//     }
+    
+    
+//     hidari_hidarisita(){
+//     //左
+//     if(left_check($xx,$yy,$player_array)){
+//         return true;
+//     }
+//     //左下
+    
+//     if(DownLeft_check($xx,$yy,$player_array)){
+//         return true;
+//     }
+//     return false;
+//     }
+
+//     migi_migisita(){
+//         //右
+//         if(right_check($xx,$yy,$player_array)){
+//             return true;
+//         }
+    
+//         //右下
+//         if(DownRight_check($xx,$yy,$player_array)){
+//             return true;
+//         }
+//         return false;
+//         }
+// }
+
+#checkとreversiの機能を結合させた関数
+function check_or_reverse($x,$y,$turn_num,$mode){
+    global $banmen;
+    $zahyo=[$x-1,$y-1];
+    $xx=$x-1;
+    $yy=$y-1;
+    if(($turn_num % 2) === 1){
+        $player='●';
+    }
+    else{
+        $player='○';
+    }
+    $player_array=['○','●'];
+    /*両プレイヤーが石を置いていないことをチェックする*/
+    if ($banmen[$yy][$xx] === ' ')
+    {
+
+        /*置くマスに上下左右斜めに隣接する相手の色の石が存在すること */
+        switch($zahyo)
+        {
+
+        /*(0,0)のとき右、右下、下方向見る */
+        case ($zahyo[0] === 0) && ($zahyo[1] === 0):
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
+            }
+            //下
+            
+            if(down_check($xx,$yy,$player_array)){
+                down_reversi($xx,$yy,$player_array);
+            }
+            //右下
+            if(DownRight_check($xx,$yy,$player_array)){
+                DownRight_reversi($xx,$yy,$player_array);
+            }
+            break;
+
+        /*(x_n,0)のとき左、左下、下、右下、右方向見る */
+        case (0 < $zahyo[0] && $zahyo[0]< 7 ) && ($zahyo[1] === 0):
+            //左
+            
+            if(left_check($xx,$yy,$player_array)){
+                left_reversi($xx,$yy,$player_array);
+            }
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
+            }
+            //下
+            
+            if(down_check($xx,$yy,$player_array)){
+                down_reversi($xx,$yy,$player_array);
+            }
+            //右下
+            if(DownRight_check($xx,$yy,$player_array)){
+                DownRight_reversi($xx,$yy,$player_array);
+            }
+            //左下
+            if(DownLeft_check($xx,$yy,$player_array)){
+                DownLeft_reversi($xx,$yy,$player_array);
+            }
+            break;
+
+        /*(x_max,0)のとき左、左下、下方向見る */
+        case ($zahyo[0] === 7) && ($zahyo[1] === 0):
+            //左
+            if(left_check($xx,$yy,$player_array)){
+                left_reversi($xx,$yy,$player_array);
+            }
+            //下
+            
+            if(down_check($xx,$yy,$player_array)){
+                down_reversi($xx,$yy,$player_array);
+            }
+            //左下
+            if(DownLeft_check($xx,$yy,$player_array)){
+                DownLeft_reversi($xx,$yy,$player_array);
+            }
+            break;
+
+        /*(0,y_n)のとき上、右上、右、右下、下方向見る */
+        case ($zahyo[0] === 0) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
+            //上
+            if(up_check($xx,$yy,$player_array)){
+                up_reversi($xx,$yy,$player_array);
+            }
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
+            }
+            //下
+            
+            if(down_check($xx,$yy,$player_array)){
+                down_reversi($xx,$yy,$player_array);
+            }
+            //右上
+            if(UpperRight_check($xx,$yy,$player_array)){
+                UpperRight_reversi($xx,$yy,$player_array);
+            }
+            break;
+
+        /*(x_max,y_n)のとき上、左上、左、左下、下方向見る */
+        case ($zahyo[0] === 7) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
+            //上
+            echo $zahyo[0],$zahyo[1];
+            if(up_check($xx,$yy,$player_array)){
+                up_reversi($xx,$yy,$player_array);
+            }
+            //下
+            
+            if(down_check($xx,$yy,$player_array)){
+                down_reversi($xx,$yy,$player_array);
+            }
+            //左
+            if(left_check($xx,$yy,$player_array)){
+                left_reversi($xx,$yy,$player_array);
+            }
+            //左上
+            if(UpperLeft_check($xx,$yy,$player_array)){
+                UpperLeft_reversi($xx,$yy,$player_array);
+            }
+            //左下
+            if(DownLeft_check($xx,$yy,$player_array)){
+                DownLeft_reversi($xx,$yy,$player_array);
+            }
+            break;
+
+
+        /*(0,y_max)のとき上、右上、右方向見る */
+        case ($zahyo[0] === 0) && ($zahyo[1] === 7) :
+            //上
+            
+            if(up_check($xx,$yy,$player_array)){
+                up_reversi($xx,$yy,$player_array);
+            }
+
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
+            }
+
+            //右上
+            if(UpperRight_check($xx,$yy,$player_array)){
+                UpperRight_reversi($xx,$yy,$player_array);
+            }
+            break;
+        /*(x_n,y_max)のとき左、左上、上、右上、右方向見る */
+        case (0 < $zahyo[0] && $zahyo[0]< 7 ) && ($zahyo[1] === 7) :
+
+            //上
+            
+            if(up_check($xx,$yy,$player_array)){
+                up_reversi($xx,$yy,$player_array);
+            }
+
+            //左
+            if(left_check($xx,$yy,$player_array)){
+                left_reversi($xx,$yy,$player_array);
+            }
+
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
+            }
+
+            //右上
+            if(UpperRight_check($xx,$yy,$player_array)){
+                UpperRight_reversi($xx,$yy,$player_array);
+            }
+
+            //左上
+            if(UpperLeft_check($xx,$yy,$player_array)){
+                UpperLeft_reversi($xx,$yy,$player_array);
+            }
+            break;
+        /*(x_max,y_max)のとき左、左上、上方向見る */
+        case ($zahyo[0] === 7) && ($zahyo[1] === 7) :
+            //上
+            if(up_check($xx,$yy,$player_array)){
+                up_reversi($xx,$yy,$player_array);
+            }
+
+            //左
+            if(left_check($xx,$yy,$player_array)){
+                left_reversi($xx,$yy,$player_array);
+            }
+            
+            //左上
+            if(UpperLeft_check($xx,$yy,$player_array)){
+                UpperLeft_reversi($xx,$yy,$player_array);
+            }
+            break;
+        /* 全方位判定*/
+        case (0 < $zahyo[0] && $zahyo[0]< 7 ) && (0 < $zahyo[1] && $zahyo[1]< 7):
+            //全方位みて、相手の石があれば置ける　無ければ置けない
+            //上
+            //koko
+            if(up_check($xx,$yy,$player_array)){
+                up_reversi($xx,$yy,$player_array);
+            }
+            //下  
+            echo $zahyo[0],$zahyo[1];
+            if(down_check($xx,$yy,$player_array)){
+                down_reversi($xx,$yy,$player_array);
+            }
+           
+            //左
+            echo $zahyo[0],$zahyo[1];
+            if(left_check($xx,$yy,$player_array)){
+                left_reversi($xx,$yy,$player_array);
+            }
+            //右
+            if(right_check($xx,$yy,$player_array)){
+                right_reversi($xx,$yy,$player_array);
+            }
+            
+            //右上 
+            if(UpperRight_check($xx,$yy,$player_array)){
+                UpperRight_reversi($xx,$yy,$player_array);
+            }
+            
+            //右下
+            if(DownRight_check($xx,$yy,$player_array)){
+                DownRight_reversi($xx,$yy,$player_array);
+            }
+            
+            //左上 
+            if(UpperLeft_check($xx,$yy,$player_array)){
+                UpperLeft_reversi($xx,$yy,$player_array);
+            }
+            
+            //左下 
+            if(DownLeft_check($xx,$yy,$player_array)){
+                DownLeft_reversi($xx,$yy,$player_array);
+            }
+            //条件に合う置き方が見つからなかったらfalseを返す
+            break;
+        }
+        
     }
 }
