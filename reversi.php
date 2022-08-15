@@ -11,15 +11,15 @@ $banmen=[[' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ',' ',' ',' ',' ',' '],
         ];
         
-$banmen=[['●','●','●','●','○','●','●','●'],
-        ['●','●','●','●','●','○','●','●'],
-        ['●','●','●','●','●','●','○','●'],
-        ['●','●','●','●','●','○','●','●'],
-        ['●','●','●','●','○','●','●','●'],
-        ['●','●','●','●','●',' ','●','●'],
-        ['●','●','●','●','●','●','●','●'],
-        ['●','●','●','●','●','●','●','●'],
-        ];
+// $banmen=[['●','●','●','●','○','●','●','●'],
+//         ['●','●','●','●','●','○','●','●'],
+//         ['●','●','●','●','●','●','○','●'],
+//         ['●','●','●','●','●','○','●','●'],
+//         ['●','●','●','●','○','●','●','●'],
+//         ['●','●','●','●','●',' ','●','●'],
+//         ['●','●','●','●','●','●','●','●'],
+//         ['●','●','●','●','●','●','●','●'],
+//         ];
 
 $turn_num=1;
 $player=true; //Trueが黒、Falseが白
@@ -37,6 +37,8 @@ function main()
         /*ゲーム終了条件に合致してるか判定処理書く */
 
         /*ーーーーーー ここまで ーーーーーー*/
+        echo "黒色のプレイヤー：●\n";
+        echo "白色のプレイヤー：○\n";
         echo "$turn_num"."ターン目の盤面を表示します\n";
         show();
         player_place();
@@ -96,7 +98,8 @@ function both_unable_place(){
     for($i=1; $i<=8; $i++){
         for($j=1; $j<=8; $j++){
             //あれば続行
-            if($banmen[$i-1][$j-1]===' '&&check_set($i,$j,$turn_num)===true){
+            // if($banmen[$i-1][$j-1]===' '&&check_set($i,$j,$turn_num)===true){
+            if($banmen[$i-1][$j-1]===' '&&check_or_reverse($i,$j,$turn_num,0)){
                 return true;
             }
         }
@@ -105,7 +108,9 @@ function both_unable_place(){
     for($i=1; $i<=8; $i++){
         for($j=1; $j<=8; $j++){
             //あれば続行
-            if($banmen[$i-1][$j-1]===' '&&check_set($i,$j,$turn_num)===true){
+            // if($banmen[$i-1][$j-1]===' '&&check_set($i,$j,$turn_num)===true){
+            if($banmen[$i-1][$j-1]===' '&&check_or_reverse($i,$j,$turn_num,0)){
+
                 return true;
             }
         }
@@ -627,7 +632,7 @@ function reversi($x,$y,$turn_num){
         /*(x_max,y_n)のとき上、左上、左、左下、下方向見る */
         case ($zahyo[0] === 7) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
             //上
-            echo $zahyo[0],$zahyo[1];
+            // echo $zahyo[0],$zahyo[1];
             if(up_check($xx,$yy,$player_array)){
                 up_reversi($xx,$yy,$player_array);
             }
@@ -724,13 +729,13 @@ function reversi($x,$y,$turn_num){
                 up_reversi($xx,$yy,$player_array);
             }
             //下  
-            echo $zahyo[0],$zahyo[1];
+            // echo $zahyo[0],$zahyo[1];
             if(down_check($xx,$yy,$player_array)){
                 down_reversi($xx,$yy,$player_array);
             }
            
             //左
-            echo $zahyo[0],$zahyo[1];
+            // echo $zahyo[0],$zahyo[1];
             if(left_check($xx,$yy,$player_array)){
                 left_reversi($xx,$yy,$player_array);
             }
@@ -937,7 +942,7 @@ function player_place(){
         
 
         //指定した座標に石を置けるか判定 置けなかったら再入力
-        if(check_set($x,$y,$turn_num))
+        if(check_or_reverse($x,$y,$turn_num,0))
         {
             break;
         }
@@ -946,7 +951,8 @@ function player_place(){
     }
     if($x!==-1 || $y!==-1){
         echo "($x,$y)に石を置きます\n";
-        reversi($x,$y,$turn_num);
+        // reversi($x,$y,$turn_num);
+        check_or_reverse($x,$y,$turn_num,1);
         $banmen[$y-1][$x-1] = $player_icon;
 
         //終了前にplayerを相手に変更する
@@ -1029,6 +1035,7 @@ function left_check_and_reversi($xx,$yy,$player_array){
 
 #checkとreversiの機能を結合させた関数
 function check_or_reverse($x,$y,$turn_num,$mode){
+    //$modeが0ならば置けるかどうかcheckし,1ならば実際に石をreverseする
     global $banmen;
     $zahyo=[$x-1,$y-1];
     $xx=$x-1;
@@ -1052,16 +1059,37 @@ function check_or_reverse($x,$y,$turn_num,$mode){
         case ($zahyo[0] === 0) && ($zahyo[1] === 0):
             //右
             if(right_check($xx,$yy,$player_array)){
-                right_reversi($xx,$yy,$player_array);
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+                    right_reversi($xx,$yy,$player_array);
+                }
+                
             }
             //下
             
             if(down_check($xx,$yy,$player_array)){
-                down_reversi($xx,$yy,$player_array);
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+
+                    down_reversi($xx,$yy,$player_array);
+                }
             }
             //右下
             if(DownRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+
                 DownRight_reversi($xx,$yy,$player_array);
+                }
+            }
+            if($mode===0){
+                return false;
             }
             break;
 
@@ -1070,41 +1098,89 @@ function check_or_reverse($x,$y,$turn_num,$mode){
             //左
             
             if(left_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+
                 left_reversi($xx,$yy,$player_array);
+                }
             }
             //右
             if(right_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+
                 right_reversi($xx,$yy,$player_array);
+                }
             }
             //下
             
             if(down_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 down_reversi($xx,$yy,$player_array);
+                }
             }
             //右下
             if(DownRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 DownRight_reversi($xx,$yy,$player_array);
+                }
             }
             //左下
             if(DownLeft_check($xx,$yy,$player_array)){
-                DownLeft_reversi($xx,$yy,$player_array);
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+                    DownLeft_reversi($xx,$yy,$player_array);
+                }
             }
+            if($mode===0){
+                return false;
+            }
+
             break;
 
         /*(x_max,0)のとき左、左下、下方向見る */
         case ($zahyo[0] === 7) && ($zahyo[1] === 0):
             //左
             if(left_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 left_reversi($xx,$yy,$player_array);
+                }
             }
             //下
-            
             if(down_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 down_reversi($xx,$yy,$player_array);
+                }
             }
             //左下
             if(DownLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 DownLeft_reversi($xx,$yy,$player_array);
+                }
+            }
+            if($mode===0){
+                return false;
             }
             break;
 
@@ -1112,46 +1188,95 @@ function check_or_reverse($x,$y,$turn_num,$mode){
         case ($zahyo[0] === 0) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
             //上
             if(up_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 up_reversi($xx,$yy,$player_array);
+                }
             }
             //右
             if(right_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 right_reversi($xx,$yy,$player_array);
+                }
             }
             //下
             
             if(down_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
+
                 down_reversi($xx,$yy,$player_array);
+                }
             }
             //右上
             if(UpperRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperRight_reversi($xx,$yy,$player_array);
+                }
             }
             break;
 
         /*(x_max,y_n)のとき上、左上、左、左下、下方向見る */
         case ($zahyo[0] === 7) && (0 < $zahyo[1] && $zahyo[1]< 7 ):
             //上
-            echo $zahyo[0],$zahyo[1];
+            // echo $zahyo[0],$zahyo[1];
             if(up_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 up_reversi($xx,$yy,$player_array);
+                }
             }
             //下
             
             if(down_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 down_reversi($xx,$yy,$player_array);
+                }
             }
             //左
             if(left_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 left_reversi($xx,$yy,$player_array);
+                }
             }
             //左上
             if(UpperLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperLeft_reversi($xx,$yy,$player_array);
+                }
             }
             //左下
             if(DownLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 DownLeft_reversi($xx,$yy,$player_array);
+                }
+            }
+            if($mode===0){
+                return false;
             }
             break;
 
@@ -1161,17 +1286,35 @@ function check_or_reverse($x,$y,$turn_num,$mode){
             //上
             
             if(up_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 up_reversi($xx,$yy,$player_array);
+                }
             }
 
             //右
             if(right_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 right_reversi($xx,$yy,$player_array);
+                }
             }
 
             //右上
             if(UpperRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperRight_reversi($xx,$yy,$player_array);
+                }
+            }
+            if($mode===0){
+                return false;
             }
             break;
         /*(x_n,y_max)のとき左、左上、上、右上、右方向見る */
@@ -1180,44 +1323,90 @@ function check_or_reverse($x,$y,$turn_num,$mode){
             //上
             
             if(up_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 up_reversi($xx,$yy,$player_array);
+                }
             }
 
             //左
             if(left_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 left_reversi($xx,$yy,$player_array);
+                }
             }
 
             //右
             if(right_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 right_reversi($xx,$yy,$player_array);
+                }
             }
 
             //右上
             if(UpperRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperRight_reversi($xx,$yy,$player_array);
+                }
             }
 
             //左上
             if(UpperLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperLeft_reversi($xx,$yy,$player_array);
+                }
+            }
+            if($mode===0){
+                return false;
             }
             break;
         /*(x_max,y_max)のとき左、左上、上方向見る */
         case ($zahyo[0] === 7) && ($zahyo[1] === 7) :
             //上
             if(up_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 up_reversi($xx,$yy,$player_array);
+                }
             }
 
             //左
             if(left_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 left_reversi($xx,$yy,$player_array);
+                }
             }
             
             //左上
             if(UpperLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperLeft_reversi($xx,$yy,$player_array);
+                }
+            }
+            if($mode===0){
+                return false;
             }
             break;
         /* 全方位判定*/
@@ -1226,44 +1415,87 @@ function check_or_reverse($x,$y,$turn_num,$mode){
             //上
             //koko
             if(up_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 up_reversi($xx,$yy,$player_array);
+                }
             }
             //下  
-            echo $zahyo[0],$zahyo[1];
+            // echo $zahyo[0],$zahyo[1];
             if(down_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 down_reversi($xx,$yy,$player_array);
+                }
             }
            
             //左
-            echo $zahyo[0],$zahyo[1];
+            // echo $zahyo[0],$zahyo[1];
             if(left_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 left_reversi($xx,$yy,$player_array);
+                }
             }
             //右
             if(right_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 right_reversi($xx,$yy,$player_array);
+                }
             }
             
             //右上 
             if(UpperRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperRight_reversi($xx,$yy,$player_array);
+                }
             }
             
             //右下
             if(DownRight_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 DownRight_reversi($xx,$yy,$player_array);
+                }
             }
             
             //左上 
             if(UpperLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 UpperLeft_reversi($xx,$yy,$player_array);
+                }
             }
             
             //左下 
             if(DownLeft_check($xx,$yy,$player_array)){
+                if($mode===0){
+                    return true;
+                }
+                else if($mode===1){
                 DownLeft_reversi($xx,$yy,$player_array);
+                }
             }
             //条件に合う置き方が見つからなかったらfalseを返す
+            if($mode===0){
+                return false;
+            }
             break;
         }
         
